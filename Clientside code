@@ -1,0 +1,43 @@
+(function () {
+    function apply(context, template) {
+        const contentZoneSelector = Evergage.getContentZoneSelector(context.contentZone);
+
+        return Evergage.DisplayUtils.pageElementLoaded(contentZoneSelector).then((element) => {
+            // Get the currently featured blog from localStorage
+            const featuredBlogUrl = localStorage.getItem("featuredBlogUrl");
+            const featuredBlog = context.blogs.find((blog) => blog.url === featuredBlogUrl) || context.defaultFeaturedBlog;
+
+            const data = {
+                featuredBlog: featuredBlog,
+                blogs: context.blogs.filter((blog) => blog.url !== featuredBlog.url),
+                campaign: context.campaignId,
+                experience: context.experienceId,
+                userGroup: context.userGroup,
+            };
+
+            const html = template(data);
+            Evergage.cashDom(element).html(html);
+        });
+    }
+
+    function reset(context, template) {
+        Evergage.cashDom("#evg-new-template").remove();
+    }
+
+    function control(context) {
+        const contentZoneSelector = Evergage.getContentZoneSelector(context.contentZone);
+        return Evergage.DisplayUtils.pageElementLoaded(contentZoneSelector).then((element) => {
+            Evergage.cashDom(element).attr({
+                "data-evg-campaign-id": context.campaign,
+                "data-evg-experience-id": context.experience,
+                "data-evg-user-group": context.userGroup,
+            });
+        });
+    }
+
+    registerTemplate({
+        apply: apply,
+        reset: reset,
+        control: control,
+    });
+})();
