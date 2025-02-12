@@ -1,0 +1,46 @@
+export class NewTemplate implements CampaignTemplateComponent {
+    run(context: CampaignComponentContext) {
+        const blogs = [
+            {
+                itemId: "blog1",
+                title: "Cookieless Future - How to Market in a World Without Cookies",
+                url: "https://growthnatives.com/blogs/digital-marketing/cookieless-future-how-to-market-in-a-world-without-cookies/",
+                category: "Digital Marketing",
+                author: "Vishal Mehta",
+                publicationDate: "2022-06-29",
+                imageUrl: "https://growthnatives.com/wp-content/uploads/2022/06/a-–-57.webp",
+            },
+            {
+                itemId: "blog2",
+                title: "Top Shopify Trends to Watch",
+                url: "https://growthnatives.com/blogs/ecommerce/top-shopify-trends/",
+                category: "E-commerce",
+                author: "Rahul Saini",
+                publicationDate: "2024-12-13",
+                imageUrl: "https://growthnatives.com/wp-content/uploads/2024/12/Top-Shopify-Trends-to-Watch.webp",
+            },
+            {
+                itemId: "blog3",
+                title: "Harnessing Salesforce Generative AI for Content Creation and Advanced Data Analysis",
+                url: "https://growthnatives.com/blogs/thought-leadership/salesforce-generative-ai-for-content-creation-and-advanced-data-analysis/",
+                category: "Thought Leadership",
+                author: "Mehakpreet Kaur",
+                publicationDate: "2024-12-09",
+                imageUrl: "https://growthnatives.com/wp-content/uploads/2024/12/Harnessing-Salesforce-Generative-AI-for-Content-Creation-and-Advanced-Data-Analysis.webp",
+            },
+           
+        ];
+
+        const defaultFeaturedBlog = blogs.find((blog) => blog.category !== "E-commerce"); // Example: exclude targeted blogs
+        const featuredBlogUrl = context.userGroup.featuredBlog || defaultFeaturedBlog.url;
+        const featuredBlog = blogs.find((blog) => blog.url === featuredBlogUrl) || defaultFeaturedBlog;
+
+        return {
+            featuredBlog: featuredBlog,
+            blogs: blogs.filter((blog) => blog.url !== featuredBlog.url),
+            campaign: context.campaignId,
+            experience: context.experienceId,
+            userGroup: context.userGroup,
+        };
+    }
+}
