@@ -1,0 +1,24 @@
+.blog-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.blog-item img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 0.5rem;
+}
+.blog-item {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: calc(100% - 1rem);
+}
+
+.featured {
+    border: 2px solid #007bff; /* Highlight featured blog */
+    background-color: #f9f9f9;
+    font-weight: bold;
+}
