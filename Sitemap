@@ -1,0 +1,82 @@
+
+SalesforceInteractions.init({
+    cookieDomain: "growthnatives.com",
+    consents: [
+        {
+            purpose: SalesforceInteractions.mcis.ConsentPurpose.Personalization,
+            provider: "Example Consent Manager",
+            status: SalesforceInteractions.ConsentStatus.OptIn,
+        },
+    ],
+}).then(() => {
+    const config = {
+        global: {
+            contentZones: [
+                {
+                    name: "featured_blog",
+                    selector: ".gn-main-feature-post", // Selector for the featured blog content zone
+                },
+                {
+                    name: "targeted_blogs",
+                    selector: ".gn-blog-card", // Selector for the targeted blogs content zone
+                },
+            ],
+            listeners: [
+                // Listener for clicks on targeted blogs
+                SalesforceInteractions.listener("click", ".gn-blog-card a", (event) => {
+                    const clickedBlogUrl = event.target.closest("a").href;
+
+                    // Fetch the current featured blog from localStorage
+                    const currentFeaturedBlogUrl = localStorage.getItem("featuredBlogUrl");
+
+                    // Update the featured blog only if a different blog is clicked
+                    if (clickedBlogUrl !== currentFeaturedBlogUrl) {
+                        // Save the new featured blog URL in localStorage
+                        localStorage.setItem("featuredBlogUrl", clickedBlogUrl);
+
+                        // Dispatch an event to trigger DOM updates
+                        document.dispatchEvent(new Event("featuredBlogUpdated"));
+
+                        console.log(
+                            `Updated Featured Blog: New Featured Blog URL: ${clickedBlogUrl}, Previous: ${currentFeaturedBlogUrl}`
+                        );
+                    } else {
+                        console.log(`Blog is already featured: ${clickedBlogUrl}`);
+                    }
+                }),
+            ],
+        },
+        pageTypeDefault: {
+            name: "default",
+            interaction: { name: "Default Page" },
+        },
+        pageTypes: [
+            {
+                name: "blogs",
+                isMatch: () => /^\/blogs\/?/.test(window.location.pathname),
+                interaction: {
+                    name: SalesforceInteractions.CatalogObjectInteractionName.ViewCatalogObject,
+                    catalogObject: {
+                        type: "Blogs",
+                        id: () => {
+                            return window.location.href; // Use the full URL as the unique blog ID
+                        },
+                        attributes: {
+                            blogPostUrl: window.location.href,
+                            featured: () => {
+                                const featuredBlogUrl = localStorage.getItem("featuredBlogUrl");
+                                return featuredBlogUrl === window.location.href;
+                            },
+                            category: SalesforceInteractions.cashDom(".blog-category").text(),
+                            publishDate: SalesforceInteractions.cashDom(".publish-date").text(),
+                            author: SalesforceInteractions.cashDom(".author-name").text(),
+                            title: SalesforceInteractions.cashDom("h1.blog-title").text(),
+                        },
+                    },
+                },
+            },
+        ],
+    };
+
+    SalesforceInteractions.initSitemap(config);
+});
